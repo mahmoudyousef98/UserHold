@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private int state = 0; //where 0 is off and 1 is on
 
-    private LinkedList<HashMap> gyr_vals = new LinkedList();
-    private LinkedList<HashMap> accel_vals = new LinkedList();
+    private LinkedList<HashMap> gyr_vals = new LinkedList<HashMap>();
+    private LinkedList<HashMap> accel_vals = new LinkedList<HashMap>();
 
 
     @Override
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         setContentView(R.layout.activity_main);
 
+
         //add start and stop button
         //save values to dictionary-like structure
         //maybe add a save values button
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
                 if(state == 0) {
-                    Snackbar.make(view, "Currently recording sensor values", Snackbar.LENGTH_LONG);
+                    Snackbar.make(view, "Currently recording sensor values", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     //No activity set yet
                     //Context c = view.getContext();
                     //c.onResume();
@@ -84,11 +85,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
                 if(state == 1) {
-                    Snackbar.make(view, "Stopping reading", Snackbar.LENGTH_LONG);
+                    Snackbar.make(view, "Stopping reading", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     //No activity set yet
                     onPause();
                     state = 0;
-                    Snackbar.make(view, "Stopped reading", Snackbar.LENGTH_LONG);
+                    Snackbar.make(view, "Stopped reading", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 } else {
                     Snackbar.make(view, "Currently not recording sensor values", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
                 if(state == 0) {
-                    Snackbar.make(view, "Saving reads", Snackbar.LENGTH_LONG);
+                    Snackbar.make(view, "Saving reads", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     Context c = view.getContext();
                     File path = c.getExternalFilesDir(null);
                     System.out.println(path.toString());
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     } catch (IOException e) {
                         System.out.println(e.toString());
                     }
-
+                    gyr_vals = new LinkedList<HashMap>();
 
                     try{
                         File accel_file = new File(path, "accelerometer-reads-" + t + ".json");
@@ -131,8 +132,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     } catch (IOException e) {
                         System.out.println(e.toString());
                     }
-
-                    Snackbar.make(view, "Reads saved on external SD card", Snackbar.LENGTH_LONG);
+                    accel_vals = new LinkedList<HashMap>();
+                    Snackbar.make(view, "Reads saved on external SD card", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     System.out.println("Reads saved on external SD card");
 
                 } else {
@@ -146,13 +147,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void initializeSensors(){
         sMg = (SensorManager)this.getSystemService(SENSOR_SERVICE);
 
-        accel = sMg.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        accel = sMg.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         assert accel != null : "No accelerometer on device";
-        sMg.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
+        sMg.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
 
         gyr = sMg.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         assert gyr != null : "No gyroscope on device";
-        sMg.registerListener(this, gyr, SensorManager.SENSOR_DELAY_NORMAL);
+        sMg.registerListener(this, gyr, SensorManager.SENSOR_DELAY_FASTEST);
 
         this.onPause();
     }
@@ -160,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume(){
         super.onResume();
         if(state == 1) {
-            sMg.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
-            sMg.registerListener(this, gyr, SensorManager.SENSOR_DELAY_NORMAL);
+            sMg.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
+            sMg.registerListener(this, gyr, SensorManager.SENSOR_DELAY_FASTEST);
             System.out.println("Resumed");
         }
     }
@@ -194,21 +195,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         map.put("X-value", vals[0]);
         map.put("Y-value", vals[1]);
         map.put("Z-value", vals[2]);
-        map.put("Accuracy", acc);
 
         if(event.sensor == gyr){
             sens = "Gyroscope: ";
             acc = gyr_acc;
+            map.put("Accuracy", acc);
             gyr_vals.add(map);
         } else {
             sens = "Accelerometer: ";
             acc = accel_acc;
+            map.put("Accuracy", acc);
             accel_vals.add(map);
         }
 
         System.out.print(sens);
-        for(int i = 0; i < vals.length; i++){
-            System.out.print(vals[i] + ";_ ");
+        for (float val : vals) {
+            System.out.print(val + ";_ ");
         }
         System.out.print("\tAccuracy: ");
         System.out.println(acc);

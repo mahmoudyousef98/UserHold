@@ -1,22 +1,16 @@
 package com.example.userhold;
 
-import java.lang.Math;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+public class GyroVector extends Vector {
 
-public class MotionVector extends Vector {
-
-    public MotionVector(){
-        super("Motion");
+    public GyroVector(){
+        super("Gyro");
     }
 
-    public MotionVector(LinkedList<HashMap> vals){
-        super(vals, "Motion");
-    }
-
-    public double[] get_info(boolean standard){
-        return(super.get_info(true));
+    public GyroVector(LinkedList<HashMap> vals){
+        super(vals, "Gyro");
     }
 
     public Tuple<Double, Double> detect_significant_motion(double var_x, double var_y, double var_z, int threshold){ //parameters should be standard deviation of ground
@@ -68,19 +62,13 @@ public class MotionVector extends Vector {
 
     }
 
-    public String toString(){
-        String val = IDENTIFIER + '\n';
-        val += "Vector type: " + "Motion" + '\n';
-        val += "Vector size: " + x.size() + '\n';
-        val += "Vector X:\n";
-        val += x.toString();
-        val += "Vector Y:\n";
-        val += y.toString();
-        val += "Vector Z:\n";
-        val += z.toString();
-        //val += "Threshold: " + this.threshold + '\n';
-        val += '\n' + ENDTEXT + '\n';
-        return(val);
+    public double[] get_values(double time) {
+        int i;
+        for (i = 0; i < this.size - 1; i++) {
+            if(times[i] <= time && times[i+1] >= time) break;
+        }
+        return this.gets(i);
     }
+
 
 }

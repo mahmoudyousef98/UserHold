@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 /* TODO: find a way to overwrite file when we need to delete the model.
 *  Also, initial check to see if file exists.
+*  NOTE: THIS FILE IS CURRENTLY NONFUNCTIONAL AND BUGGY.
 * */
 
 public class Writer {

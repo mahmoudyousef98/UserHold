@@ -1,9 +1,18 @@
 package com.example.userhold;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
+/*
+ * TODO:
+ */
+
 class Vector {
     protected ValueList x = null;
     protected ValueList y = null;
     protected ValueList z = null;
+
+    protected double[] times;
 
     protected double[] means = new double[3];
     protected double[] variations = new double[3];
@@ -20,6 +29,49 @@ class Vector {
         y = new ValueList();
         z = new ValueList();
         type = _type;
+        times = null;
+    }
+
+    protected Vector(LinkedList<HashMap> vals, String _type){
+        this(_type);
+        times = new double[vals.size()];
+        int i = 0;
+        for(HashMap val : vals){
+            double timestamp = (double)val.get("Timestamp");
+            double x_val = (double)val.get("X-value");
+            double y_val = (double)val.get("Y-value");
+            double z_val = (double)val.get("Z-value");
+
+            x.append(x_val);
+            y.append(y_val);
+            z.append(z_val);
+            times[i] = timestamp;
+            i++;
+            size += 1;
+        }
+    }
+
+    public void subset(double start_time, double end_time){
+        int i = 0, j = size - 1;
+        for(; i < size; i++){
+            if(times[i] >= start_time) break;
+        }
+        if(i == size) return;
+        while(j > (i + 1)){
+            if(times[j] <= end_time) break;
+        }
+        x.subset(i, j);
+        y.subset(i, j);
+        z.subset(i, j);
+
+        int num = j - i;
+        double[] temp = new double[num];
+        for(int t = i; t < j; t++){
+            temp[t] = times[i+t];
+        }
+        times = temp;
+        size = num;
+
     }
 
     private void add_x(double val){
@@ -35,10 +87,11 @@ class Vector {
     }
 
     void add(double val_x, double val_y, double val_z){
-        this.add_x(val_x);
+        return; //buggy implementation rn, trying to avoid it completely
+        /*this.add_x(val_x);
         this.add_y(val_y);
         this.add_z(val_z);
-        size += 1;
+        size += 1; */
     }
 
     double[] gets(int i){
@@ -49,8 +102,12 @@ class Vector {
         return(result);
     }
 
+    double get_time(int i){
+        return times[i];
+    }
+
     int size(){
-        return(x.size());
+        return(size);
     }
 
     void extract_means(){

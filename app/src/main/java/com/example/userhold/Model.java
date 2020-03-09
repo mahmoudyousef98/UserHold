@@ -110,7 +110,7 @@ public class Model {
         int index = 0;
         for(int i = 0; i < size_small; i++){
             Tuple<Integer, Double> match = this.optimize_start(bigger, smaller, index, i);
-            index += match.x;
+            index = match.x;
             double var = match.y;
             total_accel_variation += var;
 

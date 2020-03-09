@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -44,7 +45,7 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
     public Sensor accel, gyr;
 
     private TextView text;
-    private TextView prompt;
+    private Button prompt;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -122,22 +123,23 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
 
         setContentView(R.layout.activity_models);
         text = findViewById(R.id.fullscreen_content);
-        text.setOnTouchListener(new View.OnTouchListener() {
+        prompt = findViewById(R.id.prompt);
+        prompt.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 if(ready){
                     if(state == 0){
                         startRecording();
+                        prompt.setText("Click to stop recording");
                     }
                     else if(state == 1){
+                        prompt.setVisibility(View.GONE);
+                        prompt.setText("Click here to start recording");
                         stopRecording();
                     }
-                    return true;
                 }
-                return false;
             }
         });
-        prompt = findViewById(R.id.prompt);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
@@ -187,49 +189,143 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         sMg.registerListener(this, accel, SensorManager.SENSOR_DELAY_NORMAL);
         sMg.registerListener(this, gyr, SensorManager.SENSOR_DELAY_NORMAL);
         state = 1;
-        text.setText("Tap the screen to stop recording");
+        text.setText("Recording");
     }
 
     private void stopRecording(){
         sMg.unregisterListener(this);
-        state = 0;
-        ready = false;
-        prompt.setVisibility(View.INVISIBLE);
-        text.setText("Loading");
-
-        try {
-            switch (level) {
-                case 0:
-                    stage0();
-                    break;
-                case 1:
-                    stage1();
-                    break;
-                case 2:
-                    stage2();
-                    break;
-                case 3:
-                    stage3();
-                    break;
-                case 4:
-                    stage4();
-                    break;
-                case 5:
-                    stage5();
-                    break;
-                case 6:
-                    stage6();
-                    break;
-                case 7:
-                    stage7();
-                    break;
-                default:
-                    stage7();
-                    break;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                state = 0;
+                ready = false;
+                prompt.setVisibility(View.INVISIBLE);
+                text.setText("Analyzing");
+                System.out.println("Loading");
             }
-        } catch (InterruptedException e){
-            e.printStackTrace();
-        }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String x = "";
+                MotionVector groundv;
+                GyroVector gyrov;
+                boolean output;
+                try {
+                    switch (level) {
+                        case 0:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            ground =  new Motion(groundv, gyrov, threshold, true);
+                            model = new Model(ground, sensitivity);
+                            text.setText("Calibrated");
+
+                            TimeUnit.SECONDS.sleep(2);
+                            level++;
+                            x = "Hold your phone comfortably in your hand";
+                            break;
+                        case 1:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            pass = new Motion(groundv, gyrov, threshold, true);
+                            model.record_passcode(pass);
+                            text.setText("Recorded");
+                            TimeUnit.SECONDS.sleep(2);
+                            level++;
+                            x = "Hold your phone again (authentication)";
+                            break;
+                        case 2:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            input = new Motion(groundv, gyrov, threshold, true);
+                            output = model.authenticate(input);
+                            text.setText("We got: " + output);
+                            TimeUnit.SECONDS.sleep(3);
+                            level++;
+                            text.setText("Wait 3 minutes");
+                            TimeUnit.MINUTES.sleep(3);
+                            x = "Hold your phone again (authentication)";
+                            break;
+                        case 3:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            input = new Motion(groundv, gyrov, threshold, false);
+                            output = model.authenticate(input);
+                            text.setText("We got: " + output);
+                            level++;
+                            TimeUnit.SECONDS.sleep(3);
+                            x = "Choose a motion and get ready to input it";
+                            break;
+                        case 4:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            pass = new Motion(groundv, gyrov, threshold, false);
+                            model.record_passcode(pass);
+                            text.setText("Recorded");
+                            TimeUnit.SECONDS.sleep(2);
+                            level++;
+                            x = "Do the motion again (authentication)";
+                            break;
+                        case 5:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            input = new Motion(groundv, gyrov, threshold, false);
+                            output = model.authenticate(input);
+                            text.setText("We got: " + output);
+                            TimeUnit.SECONDS.sleep(3);
+                            level++;
+                            text.setText("Wait 3 minutes");
+                            TimeUnit.MINUTES.sleep(3);
+                            x = "Do the motion again (authentication)";
+                            break;
+                        case 6:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            input = new Motion(groundv, gyrov, threshold, false);
+                            output = model.authenticate(input);
+                            text.setText("We got: " + output);
+                            level++;
+                            TimeUnit.SECONDS.sleep(3);
+                            x = "It's cracking time";
+                            break;
+                        case 7:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            input = new Motion(groundv, gyrov, threshold, false);
+                            output = model.authenticate(input);
+                            text.setText("We got: " + output);
+                            level = 4;
+                            TimeUnit.SECONDS.sleep(3);
+                            x = "Choose a motion and get ready to input it";
+                            break;
+                        default:
+                            x = "Error. Let's try again. Choose a motion and get ready to input it";
+                            level = 4;
+                            break;
+                    }
+                } catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+
+                final String sh = x;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        measure(sh);
+                    }
+                });
+            }
+        }).start();
+
     }
 
     @Override
@@ -293,19 +389,22 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private void stage0() throws InterruptedException{
+    /*private String stage0() throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
         ground =  new Motion(groundv, gyrov, threshold, true);
         model = new Model(ground, sensitivity);
         text.setText("Calibrated");
+
         TimeUnit.SECONDS.sleep(2);
         level++;
-        measure("Hold your phone comfortably in your hand");
+        return("Hold your phone comfortably in your hand");
     }
 
-    private void stage1() throws InterruptedException{
+    private String stage1() throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -314,10 +413,11 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         text.setText("Recorded");
         TimeUnit.SECONDS.sleep(2);
         level++;
-        measure("Hold your phone again (authentication)");
+        return("Hold your phone again (authentication)");
     }
 
-    private void stage2() throws InterruptedException{
+    private String stage2() throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -328,10 +428,11 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         level++;
         text.setText("Wait 3 minutes");
         TimeUnit.MINUTES.sleep(3);
-        measure("Hold your phone again (authentication)");
+        return("Hold your phone again (authentication)");
     }
 
-    private void stage3() throws InterruptedException{
+    private String stage3() throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -340,10 +441,11 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         text.setText("We got: " + output);
         level++;
         TimeUnit.SECONDS.sleep(3);
-        measure("Choose a motion and get ready to input it");
+        return("Choose a motion and get ready to input it");
     }
 
-    private void stage4() throws InterruptedException{
+    private String stage4() throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -352,10 +454,11 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         text.setText("Recorded");
         TimeUnit.SECONDS.sleep(2);
         level++;
-        measure("Do the motion again (authentication)");
+        return("Do the motion again (authentication)");
     }
 
-    private void stage5()throws InterruptedException{
+    private String stage5()throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -366,10 +469,11 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         level++;
         text.setText("Wait 3 minutes");
         TimeUnit.MINUTES.sleep(3);
-        measure("Hold your phone again (authentication)");
+        return("Hold your phone again (authentication)");
     }
 
-    private void stage6()throws InterruptedException{
+    private String stage6()throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -378,10 +482,11 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         text.setText("We got: " + output);
         level++;
         TimeUnit.SECONDS.sleep(3);
-        measure("It's cracking time");
+        return("It's cracking time");
     }
 
-    private void stage7()throws InterruptedException{
+    private String stage7()throws InterruptedException{
+        final TextView text = this.text;
         TimeUnit.SECONDS.sleep(1);
         MotionVector groundv = new MotionVector(accel_vals);
         GyroVector gyrov = new GyroVector(gyr_vals);
@@ -390,15 +495,15 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
         text.setText("We got: " + output);
         level = 4;
         TimeUnit.SECONDS.sleep(3);
-        measure("Choose a motion and get ready to input it");
-    }
+        return("Choose a motion and get ready to input it");
+    } */
 
     public void onAccuracyChanged(Sensor sensor, int accuracy){
         //do nothing
     }
 
     public void onSensorChanged(SensorEvent event) {
-        int acc = 0;
+        int acc;
         String sens;
 
         long time = event.timestamp;

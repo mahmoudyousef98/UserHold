@@ -247,10 +247,21 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             TimeUnit.SECONDS.sleep(3);
                             level++;
                             text.setText("Wait 3 minutes");
-                            TimeUnit.SECONDS.sleep(3); //TODO: Change to minutes
+                            TimeUnit.MINUTES.sleep(3); //TODO: Change to minutes
                             x = "Hold your phone again (authentication)";
                             break;
                         case 3:
+                            TimeUnit.SECONDS.sleep(1);
+                            groundv = new MotionVector(accel_vals);
+                            gyrov = new GyroVector(gyr_vals);
+                            input = new Motion(groundv, gyrov, threshold, true);
+                            output = model.authenticate(input);
+                            text.setText("We got: " + output);
+                            TimeUnit.SECONDS.sleep(3);
+                            level++;
+                            x = "It's cracking time";
+                            break;
+                        case 4:
                             TimeUnit.SECONDS.sleep(1);
                             groundv = new MotionVector(accel_vals);
                             gyrov = new GyroVector(gyr_vals);
@@ -261,7 +272,7 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             TimeUnit.SECONDS.sleep(3);
                             x = "Choose a motion and get ready to input it";
                             break;
-                        case 4:
+                        case 5:
                             TimeUnit.SECONDS.sleep(1);
                             groundv = new MotionVector(accel_vals);
                             gyrov = new GyroVector(gyr_vals);
@@ -272,7 +283,7 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             level++;
                             x = "Do the motion again (authentication)";
                             break;
-                        case 5:
+                        case 6:
                             TimeUnit.SECONDS.sleep(1);
                             groundv = new MotionVector(accel_vals);
                             gyrov = new GyroVector(gyr_vals);
@@ -285,7 +296,7 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             TimeUnit.MINUTES.sleep(3);
                             x = "Do the motion again (authentication)";
                             break;
-                        case 6:
+                        case 7:
                             TimeUnit.SECONDS.sleep(1);
                             groundv = new MotionVector(accel_vals);
                             gyrov = new GyroVector(gyr_vals);
@@ -296,8 +307,8 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             TimeUnit.SECONDS.sleep(3);
                             x = "It's cracking time";
                             break;
-                        case 7:
                         case 8:
+                        case 9:
                             TimeUnit.SECONDS.sleep(1);
                             groundv = new MotionVector(accel_vals);
                             gyrov = new GyroVector(gyr_vals);
@@ -308,7 +319,7 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             TimeUnit.SECONDS.sleep(3);
                             x = "Crack again";
                             break;
-                        case 9:
+                        case 10:
                             TimeUnit.SECONDS.sleep(1);
                             groundv = new MotionVector(accel_vals);
                             gyrov = new GyroVector(gyr_vals);
@@ -321,7 +332,7 @@ public class ModelsActivity extends AppCompatActivity implements SensorEventList
                             break;
                         default:
                             x = "Error. Let's try again. Choose a motion and get ready to input it";
-                            level = 4;
+                            level = 5;
                             break;
                     }
                 } catch (InterruptedException e){

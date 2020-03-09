@@ -87,6 +87,7 @@ public class Model {
     }
 
     private Tuple<Double, Double> compare(Motion input){
+        System.out.println("Initializing - sensitivity: " + sensitivity);
         int size_pass = pass.size();
         int size_inp = input.size();
         Motion bigger;
@@ -117,23 +118,31 @@ public class Model {
             double[] small_vals = smaller.gets_accel(i);
             double[] bigger_vals = bigger.gets_accel(index);
 
-            if(Math.abs(small_vals[0] - bigger_vals[0]) <= (boundary_variations[0] / sensitivity)) match_score += 1;
-            if(Math.abs(small_vals[1] - bigger_vals[1]) <= (boundary_variations[1] / sensitivity)) match_score += 1;
-            if(Math.abs(small_vals[2] - bigger_vals[2]) <= (boundary_variations[2] / sensitivity)) match_score += 1;
+            System.out.println(small_vals[0] + ", " + small_vals[1] + ", " + small_vals[2]);
+            System.out.println(bigger_vals[0] + ", " + bigger_vals[1] + ", " + bigger_vals[2]);
+            System.out.println(boundary_variations[0] + ", " + boundary_variations[1] + ", " + boundary_variations[2]);
+            if(Math.abs(Math.abs(small_vals[0]) - Math.abs(bigger_vals[0])) <= Math.abs(boundary_variations[0] / sensitivity)) match_score += 1;
+            if(Math.abs(Math.abs(small_vals[1]) - Math.abs(bigger_vals[1])) <= Math.abs(boundary_variations[1] / sensitivity)) match_score += 1;
+            if(Math.abs(Math.abs(small_vals[2]) - Math.abs(bigger_vals[2])) <= Math.abs(boundary_variations[2] / sensitivity)) match_score += 1;
 
             small_vals = smaller.get_corresponding_gyro_values(i);
             bigger_vals = bigger.get_corresponding_gyro_values(index);
             total_gyro_variation += this.get_score_of_match(small_vals[0], small_vals[1], small_vals[2], bigger_vals[0], bigger_vals[1], bigger_vals[2]);
 
-            if(Math.abs(small_vals[0] - bigger_vals[0]) <= (gyro_variations[0] / sensitivity)) match_score += 1;
-            if(Math.abs(small_vals[1] - bigger_vals[1]) <= (gyro_variations[1] / sensitivity)) match_score += 1;
-            if(Math.abs(small_vals[2] - bigger_vals[2]) <= (gyro_variations[2] / sensitivity)) match_score += 1;
+            //System.out.println(small_vals[0] + ", " + small_vals[1] + ", " + small_vals[2]);
+            //System.out.println(bigger_vals[0] + ", " + bigger_vals[1] + ", " + bigger_vals[2]);
+            //System.out.println(gyro_variations[0] + ", " + gyro_variations[1] + ", " + gyro_variations[2]);
+
+            if(Math.abs(Math.abs(small_vals[0]) - Math.abs(bigger_vals[0])) <= (gyro_variations[0] / sensitivity)) match_score += 1;
+            if(Math.abs(Math.abs(small_vals[1]) - Math.abs(bigger_vals[1])) <= (gyro_variations[1] / sensitivity)) match_score += 1;
+            if(Math.abs(Math.abs(small_vals[2]) - Math.abs(bigger_vals[2])) <= (gyro_variations[2] / sensitivity)) match_score += 1;
 
             index += 1;
         }
 
         double asize = (size_big + size_small) / 2;
-        double percent_match = (match_score / (6 * asize));
+        System.out.println("Match score: " + match_score);
+        double percent_match = ((double) match_score) / (6 * size_small);
         double unit_variation = (total_accel_variation + total_gyro_variation) / (2 * size_small);
         return(new Tuple<Double, Double>(percent_match, unit_variation));
     }
@@ -141,7 +150,8 @@ public class Model {
     public boolean authenticate(Motion input){
         input.detect_significant_motion(std_xa, std_ya, std_za, std_xg, std_yg, std_zg);
         Tuple<Double, Double> analysis = compare(input);
-        if(analysis.x >= cutoff_percent){
+        System.out.println("Percentage: " + analysis.x);
+        if(analysis.x >= (cutoff_percent * sensitivity)){
             return(true);
         }
         //return analysis.x >= cutoff_percent * sensitivity && analysis.y <= variation_threshold;

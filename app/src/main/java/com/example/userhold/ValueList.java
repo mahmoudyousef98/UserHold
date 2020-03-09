@@ -11,6 +11,7 @@ public class ValueList {
     private double maximum = Double.MAX_VALUE; //int min
     private double minimum = Double.MIN_VALUE; //int max
 
+
     static final String IDENTIFIER = "#";
     static final String ENDTEXT = "~";
 
@@ -21,7 +22,7 @@ public class ValueList {
         if(cur_size == amount) {
             double[] temp = new double[cur_size + 25];
             cur_size += 25;
-            if (amount >= 0) System.arraycopy(arr, 0, temp, 0, amount);
+            if (amount > 0) System.arraycopy(arr, 0, temp, 0, amount);
             arr = temp;
         }
 
@@ -36,6 +37,13 @@ public class ValueList {
         total += x;
         amount += 1;
 
+    }
+
+    void fix(){
+        double avg = this.mean();
+        for(int i = 0; i < amount; i++){
+            arr[i] -= avg;
+        }
     }
 
     double get(int i){

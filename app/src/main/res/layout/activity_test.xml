@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#006DCC"
+    tools:context=".TestActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+    <TextView
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:keepScreenOn="true"
+        android:text=""
+        android:textColor="#C6DBF1"
+        android:textIsSelectable="false"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        tools:text="Welcome to UserHold!" />
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/dummy_button"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dummy_button" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:id="@+id/settingslayout">
+
+        <TextView
+            android:id="@+id/settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25sp"
+            android:text="Set settings:"
+            android:textAlignment="center"
+            android:textColor="#C6DBF1"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/setsensitivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100sp"
+            android:text="Set Sensitivty"
+            android:textColor="#C6DBF1"
+            android:textSize="25sp" />
+
+        <SeekBar
+            android:id="@+id/sensitivitySet"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:layout_marginTop="0sp"
+            android:background="#00FFFFFF"
+            android:backgroundTint="#FFFFFF"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="80"
+            android:progressTint="#50B7C7"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/senitivityvalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="80"
+            android:textColor="#C6DBF1"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/settimethresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100sp"
+            android:text="Set Time Threshold"
+            android:textColor="#C6DBF1"
+            android:textSize="25sp" />
+
+        <SeekBar
+            android:id="@+id/timethreshSet"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:layout_marginTop="0sp"
+            android:indeterminate="false"
+            android:max="10"
+            android:progress="3"
+            android:progressTint="#50B7C7" />
+
+        <TextView
+            android:id="@+id/timethreshvalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:textColor="#C6DBF1"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/setsettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150sp"
+            android:background="#7CFFFFFF"
+            android:elevation="10sp"
+            android:text="Set Settings"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+</FrameLayout>

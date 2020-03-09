@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 *  Also, initial check to see if file exists.
 *  NOTE: THIS FILE IS CURRENTLY NONFUNCTIONAL AND BUGGY.
 * */
-
 public class Writer {
 
     private static String filename = "local_model.txt";
@@ -31,7 +30,7 @@ public class Writer {
     /*private static ValueList read_ValueList(String vl){
         return new ValueList();
     } */
-
+/*
     private static GroundVector read_GroundVector(String gv){
         String[] fields = gv.split("[\\r\\n]+");
         String fieldx = fields[4];
@@ -164,4 +163,5 @@ public class Writer {
                 return("Success");
         }
     }
+    */
 }

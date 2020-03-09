@@ -28,6 +28,7 @@ public class Motion {
     }
 
     public void detect_significant_motion(double var_xa, double var_ya, double var_za, double var_xg, double var_yg, double var_zg){
+        if(ground) return;
         Tuple<Double, Double> mot = mv.detect_significant_motion(var_xa, var_ya, var_za, this.threshold);
         Tuple<Double, Double> gyr = gv.detect_significant_motion(var_xg, var_yg, var_zg, this.threshold);
 

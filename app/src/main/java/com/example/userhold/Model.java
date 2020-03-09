@@ -8,7 +8,7 @@ public class Model {
 
     private double x0a = 0, y0a = 0, z0a = 0, x0g = 0, y0g = 0, z0g = 0;
     private double std_xa = 0, std_ya = 0, std_za = 0, std_xg = 0, std_yg = 0, std_zg = 0;
-    private double sensitivity = 0;
+    private double sensitivity = 0.0000001;
 
     private double cutoff_percent = 0.50;
 

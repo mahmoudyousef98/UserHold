@@ -37,7 +37,7 @@ class Vector {
         times = new double[vals.size()];
         int i = 0;
         for(HashMap val : vals){
-            double timestamp = (double)val.get("Timestamp");
+            double timestamp = (double)((Long)val.get("Timestamp"));
             double x_val = (double)val.get("X-value");
             double y_val = (double)val.get("Y-value");
             double z_val = (double)val.get("Z-value");
@@ -49,6 +49,9 @@ class Vector {
             i++;
             size += 1;
         }
+        x.fix();
+        y.fix();
+        z.fix();
     }
 
     public void subset(double start_time, double end_time){

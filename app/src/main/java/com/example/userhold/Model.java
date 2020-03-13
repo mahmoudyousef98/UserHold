@@ -151,7 +151,7 @@ public class Model {
         input.detect_significant_motion(std_xa, std_ya, std_za, std_xg, std_yg, std_zg);
         Tuple<Double, Double> analysis = compare(input);
         System.out.println("Percentage: " + analysis.x);
-        if(analysis.x >= (cutoff_percent * sensitivity)){
+        if(analysis.x >= cutoff_percent){
             return(true);
         }
         //return analysis.x >= cutoff_percent * sensitivity && analysis.y <= variation_threshold;
